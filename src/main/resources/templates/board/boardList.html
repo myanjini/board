@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8" />
+	<title>게시판</title>
+	<link rel="stylesheet" th:href="@{/css/style.css}"/>	
+</head>
+<body>
+	<div class="container">
+		<h2>게시판 목록</h2>
+		<table class="board_list">
+			<colgroup>
+				<col width="15%"/>
+				<col width="*"  />
+				<col width="15%"/>
+				<col width="20%"/>
+			</colgroup>
+			<thead>
+				<tr>
+					<th scope="col">글번호</th>
+					<th scope="col">제목</th>
+					<th scope="col">조회수</th>
+					<th scope="col">작성일</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:if="${#lists.size(memberList)} > 0" th:each="mem : ${memberList}">
+					<td th:text="${mem.boardIdx}"></td>
+					<!-- 
+					<td class="title" th:text="${mem.title}"></td>
+					-->
+					<td class="title">
+						<a href="/board/openBoardDetail.do?boardIdx=" 
+							th:attrappend="href=${mem.boardIdx}" th:text="${mem.title}"></a>
+					</td>
+					<td th:text="${mem.hitCnt}"></td>
+					<td th:text="${mem.createdDatetime}"></td>
+				</tr>
+				<tr th:unless="${#lists.size(memberList)} > 0">
+					<td colspan="4">조회 결과가 없습니다.</td>
+				</tr>
+			</tbody>		
+		</table>
+		<a href="/board/openBoardWrite.do" class="btn">글쓰기</a>
+	</div>
+</body>
+</html>

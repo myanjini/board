@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8" />
+	<title>게시판</title>
+	<link rel="stylesheet" th:href="@{/css/style.css}"/>	
+</head>
+<body>
+	<div class="container">
+		<h2>게시판 등록</h2>
+		<!-- 
+		<form id="frm" name="frm" method="post" action="/board/insertBoard.do" enctype="multipart/form-data">
+		-->
+		<form id="frm" name="frm" method="post" action="/board/write" enctype="multipart/form-data">
+			<table class="board_detail">
+			<tr>
+				<td>제목</td>
+				<td><input type="text" id="title" name="title"/></td>
+			</tr>
+			<tr>
+				<td colspan="2"><textarea id="contents" name="contents"></textarea></td>
+			</tr>				
+			</table>
+			<!-- 
+				multiple 속성 -> HTML5에서 추가된 속성으로 하나의 태그로 여러 개의 파일 첨부가 가능
+			 -->
+			<input type="file" id="files" name="files" multiple="multiple" />
+			
+			<input type="submit" id="submit" value="저장" class="btn"/>
+		</form>
+	</div>
+</body>
+</html>

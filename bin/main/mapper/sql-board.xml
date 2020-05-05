@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0/EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="board.mapper.BoardMapper">
+	
+	<select id="selectBoardFileList" parameterType="int" resultType="board.dto.BoardFileDto">
+		select idx, board_idx, original_file_name, stored_file_path, 
+		       round(file_size/1024) as file_size
+		  from t_file
+		 where board_idx = #{boardIdx} and deleted_yn = 'N'
+	</select>
+	
+	<insert id="insertBoardFileList" parameterType="board.dto.BoardFileDto">
+		insert into t_file (
+			board_idx, original_file_name, stored_file_path, file_size, creator_id, created_datetime
+		) values 
+		<foreach collection="list" item="item" separator=",">
+		(
+			#{item.boardIdx}, 
+			#{item.originalFileName},
+			#{item.storedFilePath}, 
+			#{item.fileSize},
+			'admin', 
+			now()
+		)
+		</foreach>
+	</insert>
+
+	<select id="selectBoardList" resultType="board.dto.BoardDto">
+		<![CDATA[
+			select board_idx, title, hit_cnt, 
+			       date_format(created_datetime, '%Y.%m.%d %H:%i:%s') as created_datetime
+			  from t_board
+			 where deleted_yn = 'N'
+			 order by board_idx desc		
+		]]>
+	</select>
+	
+	<!-- 
+		useGeneratedKeys : DBMS가 자동 생성키를 지원하는 경우 사용 가능
+		keyProperty      : useGeneratedKeys 또는 selectKey 를 통해서 반환하는 키
+	 -->
+	<insert id="insertBoard" parameterType="board.dto.BoardDto" useGeneratedKeys="true" keyProperty="boardIdx">
+		insert into t_board (title, contents, created_datetime, creator_id)
+		values (#{title}, #{contents}, now(), 'admin')
+	</insert>
+	
+	<select id="selectBoardDetail" parameterType="int" resultType="board.dto.BoardDto">
+		select board_idx, title, contents, hit_cnt, 
+			   date_format(created_datetime, '%Y.%m.%d %H:%i:%s') as created_datetime, 
+			   creator_id
+	      from t_board
+	     where board_idx = ${boardIdx} and deleted_yn = 'N'
+	</select>
+	
+	<update id="updateHitCnt" parameterType="int">
+		update t_board set hit_cnt = hit_cnt + 1 where board_idx = #{board_idx}
+	</update>
+	
+	<update id="updateBoard" parameterType="board.dto.BoardDto">
+		update t_board set title = #{title}, contents = #{contents}, 
+		       updated_datetime = now(), updater_id = 'admin'
+		 where board_idx = #{boardIdx}  	
+	</update>
+	
+	<!-- 실제 데이터(레코드)를 삭제하는 것이 아니라 삭제되었다고만 표시 -->
+	<delete id="deleteBoard" parameterType="int">
+		update t_board set deleted_yn = 'Y',  
+		       updated_datetime = now(), updater_id = 'admin'
+		 where board_idx = #{boardIdx}
+	</delete>
+	
+	<select id="selectBoardFileInfo" parameterType="map" resultType="board.dto.BoardFileDto">
+		select original_file_name, stored_file_path, file_size
+		  from t_file
+		 where idx = #{idx} and board_idx = #{boardIdx} and deleted_yn = 'N'
+	</select>
+</mapper>	

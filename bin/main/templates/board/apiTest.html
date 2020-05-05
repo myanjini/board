@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<title>테스트</title>
+<link rel="stylesheet" href="/css/style.css"/>
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script>
+		$(function() {
+			$(document).on("click", "a", function() {
+				let boardIdx = $(this).attr('boardIdx');
+				$.ajax({
+					type: "GET",
+					url: "/api/board/" + boardIdx,
+					dataType: "json", 
+					contentType: "application/json",
+					success: function(data) {
+						let tr = `
+							<tr><td>번호</td><td>${data.boardIdx}</td></tr>
+							<tr><td>제목</td><td>${data.title}</td></tr>
+							<tr><td>조회수</td><td>${data.hitCnt}</td></tr>
+						`;
+						$('#tbl').html(tr);
+					}
+				});
+			});
+			
+			$('#btnList').click(function() {
+				$.ajax({
+					type: "GET",
+					url: "/api/board",
+					dataType: "json", 
+					contentType: "application/json",
+					success: function(data) {
+						$('#tbl').html('');
+						data.forEach(d => {
+							let tr = `
+								<tr><td>${d.boardIdx}</td><td><a href="#" boardIdx="${d.boardIdx}">${d.title}</a></td><td>${d.hitCnt}</td></tr>
+							`;
+							$('#tbl').append(tr);
+						});
+					}
+				});
+			});
+		});		
+	</script>
+</head>
+<body>
+	<h1>API TEST</h1>
+	<div>
+		<table id="tbl" class="board_list">
+		
+		</table>
+	</div>
+	<div>
+		<input type="button" id="btnList" value="조회"/>
+	</div>
+</body>
+</html>

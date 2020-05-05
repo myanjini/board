@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8" />
+	<title>게시판</title>
+	<link rel="stylesheet" th:href="@{/css/style.css}"/>	
+</head>
+<body>
+	<div class="container">
+		<h2>게시판 상세</h2>
+		<form id="frm" name="frm" method="post" action="">
+		<input type="hidden" id="boardIdx" name="boardIdx" th:value="${board.boardIdx}" />
+		
+		<!-- HiddenHttpMethodFilter를 이용해서 요청 방식(method)을 결정(변경) -->
+		<input type="hidden" id="_method" name="_method" />
+		
+			<table class="board_detail">
+				<colgroup>
+					<col width="15%"/>
+					<col width="35%"  />
+					<col width="15%"/>
+					<col width="35%"/>
+				</colgroup>
+				<tbody>
+					<tr>
+						<th scope="row">글번호</th>
+						<td th:text="${board.boardIdx}"></td>
+						<th scope="row">조회수</th>
+						<td th:text="${board.hitCnt}"></td>
+					</tr>
+					<tr>
+						<th scope="row">작성자</th>
+						<td th:text="${board.creatorId}"></td>
+						<th scope="row">작성일</th>
+						<td th:text="${board.createdDatetime}"></td>
+					</tr>
+					<tr>
+						<th scope="row">제목</th>
+						<td colspan="3">
+							<input type="text" id="title" name="title" th:value="${board.title}" />
+						</td>
+					</tr>
+					<tr>
+						<td colspan="4">
+							<textarea title="내용" id="contents" name="contents" th:text="${board.contents}"></textarea>
+						</td>
+					</tr>
+				</tbody>		
+			</table>
+		</form>
+		<div class="file_list">
+			<a th:each="list : ${board.fileInfoList}" 
+				th:href="@{/jpa/board/file(idx=${list.idx}, boardIdx=${board.boardIdx})}"
+				th:text="|${list.originalFileName} (${list.fileSize}kb)|"></a>
+		</div>
+
+		<input type="button" id="list" class="btn" value="목록으로"/>
+		<input type="button" id="update" class="btn" value="수정하기"/>
+		<input type="button" id="delete" class="btn" value="삭제하기"/>
+		
+		<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+		<script>
+			$(function() {
+				const boardIdx = $('#boardIdx').val();
+				
+				$('#list').on('click', function() {
+					location.href = "/jpa/board";
+				});
+				
+				$('#update').on('click', function() {
+					let frm = $('#frm')[0];
+					$("#_method").val("PUT");
+					frm.action = "/jpa/board/" + boardIdx;
+					frm.submit();
+				});
+				
+				$('#delete').on('click', function() {
+					let frm = $('#frm')[0];
+					$("#_method").val("DELETE");
+					frm.action = "/jpa/board/" + boardIdx;
+					frm.submit();
+				});
+			});	
+		</script>
+	</div>
+</body>
+</html>
